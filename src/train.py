@@ -14,7 +14,7 @@ X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=
 model = create_road_detection_ann(input_dim=features.shape[1])
 
 # Modeli eğitin
-history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
+history = model.fit(X_train, y_train, epochs=12, batch_size=32, validation_split=0.1)
 
 # Modeli test edin
 test_loss, test_accuracy = model.evaluate(X_test, y_test)

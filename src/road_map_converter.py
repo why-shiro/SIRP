@@ -3,8 +3,8 @@ import numpy as np
 import os
 
 # Klasör yollarını tanımlayın
-input_folder = 'referance_map/references/'  # Fotoğrafların bulunduğu klasör yolu
-output_folder = 'referance_map/processed_road_map/'  # Çıktının kaydedileceği klasör yolu
+input_folder = './src/referance_map/references/'  # Fotoğrafların bulunduğu klasör yolu
+output_folder = './src/referance_map/processed_road_map/'  # Çıktının kaydedileceği klasör yolu
 
 # Eğer output klasörü yoksa oluştur
 if not os.path.exists(output_folder):

@@ -83,7 +83,7 @@ def prepare_and_save_data(image_dir, reference_dir, output_filename='road_data.n
     save_data(all_features, all_labels, output_filename)
 
 # Örnek kullanım
-prepare_and_save_data('output/converter/', 'referance_map/processed_road_map/', 'road_data.npz')
+prepare_and_save_data('./src/output/converter/', './src/referance_map/processed_road_map/', 'road_data.npz')
 
 # .npz dosyasını yükleyin
 data = np.load('road_data.npz')

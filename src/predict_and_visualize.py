@@ -8,7 +8,7 @@ from data_preparation import extract_3x3_window_features
 model = load_model('road_detection_model.h5')
 
 # Tahmin yapmak istediğiniz görüntüyü yükleyin
-image = io.imread('output/converter/8.png')
+image = io.imread('result.jpg')
 
 # Görüntüden 3x3 özellikleri çıkarın
 features = extract_3x3_window_features(image)

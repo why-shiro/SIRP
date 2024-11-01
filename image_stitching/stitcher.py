@@ -1,10 +1,3 @@
-#
-# Author: https://github.com/sachin-vs
-# You're very cool, Sachin! Thank you for your code!
-# This code is a modified version of the original code.
-#
-
-import sys
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,8 +24,8 @@ def warpImages(img1, img2, H):
 
     return output_img
 
-directory = "./image_stitching/inputs/"  # Current directory
-img_files = [img for img in os.listdir(directory) if img.endswith('.tif')]
+directory = "./image_stitching/outputs/"  # Current directory
+img_files = [img for img in os.listdir(directory) if img.endswith('.png')]
 
 print(f"Found {len(img_files)} images in the directory.")
 
@@ -76,8 +69,8 @@ while len(img_list) > 1:
         progress = (stitch_count / (total_images - 1)) * 100  # -1 because we start with two images
         print(f"Stitching progress: {progress:.2f}%")
 
-result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
-cv2.imwrite('result.tif', result)
-plt.imshow(result)
+cv2.imwrite('result.jpg', result)  # Save in BGR format
+result_rgb = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)  # Convert to RGB for display
+plt.imshow(result_rgb)
 plt.axis('off')  # Hide axes
 plt.show()
