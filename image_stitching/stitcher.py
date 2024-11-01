@@ -1,120 +1,83 @@
-import cv2 
-import os
-import matplotlib.pyplot as plt
+#
+# Author: https://github.com/sachin-vs
+# You're very cool, Sachin! Thank you for your code!
+# This code is a modified version of the original code.
+#
+
+import sys
+import cv2
 import numpy as np
-
-# Convert .tif images to .png and save to /outputs
-def load_images_from_folder(folder):
-    images = []
-    for filename in os.listdir(folder):
-        img = cv2.imread(os.path.join(folder, filename))
-        if img is not None:
-            images.append(img)
-    return images
-
-# Load the images
-img1 = cv2.imread('./image_stitching/outputs/4.png')
-img2 = cv2.imread('./image_stitching/outputs/3.png')
-
-# ORB detector
-orb = cv2.ORB_create()
-
-# Find the keypoints and descriptors with ORB
-kp1, des1 = orb.detectAndCompute(img1, None)
-kp2, des2 = orb.detectAndCompute(img2, None)
-
-# Create BFMatcher object
-bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-matches = bf.match(des1, des2)  # Match descriptors
-
-# Sort them in the order of their distance
-matches = sorted(matches, key=lambda x: x.distance)
-
-print("Number of matches:", len(matches))
-
-# Move same parts of the images to the same coordinates
-# Calculate Homography
-src_pts = np.float32([kp1[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
-dst_pts = np.float32([kp2[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
-M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-
-# Warp the first image to the second image
-h, w = img2.shape[:2]
-warped_img = cv2.warpPerspective(img1, M, (w, h + img1.shape[0]))
-
-# Combine the images with weighted addition
-alpha = 0.5
-beta = 1.0 - alpha
-blended = cv2.addWeighted(warped_img[:h, :w], alpha, img2, beta, 0)
-
-# Place the blended part into the result
-warped_img[:h, :w] = blended
-result = warped_img
-
-# Show the result
-plt.figure(figsize=(20, 10))
-plt.imshow(result)
-plt.axis('off')
-plt.show()
-
-"""import cv2 
-import os
 import matplotlib.pyplot as plt
-import numpy as np
+import os
 
-# Convert .tif images to .png and save to /outputs
-def load_images_from_folder(folder):
-    images = []
-    for filename in os.listdir(folder):
-        img = cv2.imread(os.path.join(folder, filename))
-        if img is not None:
-            images.append(img)
-    return images
+def warpImages(img1, img2, H):
+    rows1, cols1 = img1.shape[:2]
+    rows2, cols2 = img2.shape[:2]
 
-# Load the images
-img1 = cv2.imread('./image_stitching/outputs/4.png')
-img2 = cv2.imread('./image_stitching/outputs/3.png')
+    list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
+    temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
 
-# ORB detector
-orb = cv2.ORB_create()
+    list_of_points_2 = cv2.perspectiveTransform(temp_points, H)
+    list_of_points = np.concatenate((list_of_points_1, list_of_points_2), axis=0)
 
-# Find the keypoints and descriptors with ORB
-kp1, des1 = orb.detectAndCompute(img1, None)
-kp2, des2 = orb.detectAndCompute(img2, None)
+    [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
+    [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
+    
+    translation_dist = [-x_min, -y_min]
+    H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
 
-# Create BFMatcher object
-bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-matches = bf.match(des1, des2)  # Match descriptors
+    output_img = cv2.warpPerspective(img2, H_translation.dot(H), (x_max - x_min, y_max - y_min))
+    output_img[translation_dist[1]:rows1 + translation_dist[1], translation_dist[0]:cols1 + translation_dist[0]] = img1
 
-# Sort them in the order of their distance
-matches = sorted(matches, key=lambda x: x.distance)
+    return output_img
 
-print("Number of matches:", len(matches))
+directory = "./image_stitching/inputs/"  # Current directory
+img_files = [img for img in os.listdir(directory) if img.endswith('.tif')]
 
-# Move same parts of the images to the same coordinates
-# Calculate Homography
-src_pts = np.float32([kp1[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
-dst_pts = np.float32([kp2[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
-M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+print(f"Found {len(img_files)} images in the directory.")
 
-# Warp the first image to the second image
-h, w = img2.shape[:2]
-warped_img = cv2.warpPerspective(img1, M, (w, h + img1.shape[0]))
+# Read images and filter out None values
+img_list = []
+for img in sorted(img_files):
+    img_path = os.path.join(directory, img)
+    image = cv2.imread(img_path)
+    if image is not None:
+        img_list.append(image)
 
-# Combine the images with weighted addition
-alpha = 0.5
-beta = 1.0 - alpha
-blended = cv2.addWeighted(warped_img[:h, :w], alpha, img2, beta, 0)
+orb = cv2.ORB_create(nfeatures=2000)
 
-# Place the blended part into the result
-warped_img[:h, :w] = blended
-result = warped_img
+total_images = len(img_list)
+stitch_count = 0  # Count of stitched images
 
-# Show the result
-plt.figure(figsize=(20, 10))
+while len(img_list) > 1:
+    img1 = img_list.pop(0)
+    img2 = img_list.pop(0)
+    keypoints1, descriptors1 = orb.detectAndCompute(img1, None)
+    keypoints2, descriptors2 = orb.detectAndCompute(img2, None)
+
+    bf = cv2.BFMatcher_create(cv2.NORM_HAMMING)
+
+    matches = bf.knnMatch(descriptors1, descriptors2, k=2)
+    good = [m for m, n in matches if m.distance < 0.6 * n.distance]
+
+    MIN_MATCH_COUNT = 5
+
+    if len(good) > MIN_MATCH_COUNT:
+        src_pts = np.float32([keypoints1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+        dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+
+        M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+        result = warpImages(img2, img1, M)
+        img_list.insert(0, result)
+        
+        stitch_count += 1  # Increment the stitch count
+
+        # Calculate and print the progress
+        progress = (stitch_count / (total_images - 1)) * 100  # -1 because we start with two images
+        print(f"Stitching progress: {progress:.2f}%")
+
+result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
+cv2.imwrite('result.tif', result)
 plt.imshow(result)
-plt.axis('off')
+plt.axis('off')  # Hide axes
 plt.show()
-
-şimdi bu en son yazdığın kodda outputs dir'den tüm fotoğrafları çekip teker teker 8-7-6-5-4-3-2-1-0 şeklinde ilk önce 8 ve 7 sonra birleşiminden çıkan ile 6 sonra onların birleşiminden çıkan ile 5... yapar mısın
-"""
