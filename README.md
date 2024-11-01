@@ -1,4 +1,7 @@
-# SIRP (Satellite Image Road Prediction)
+
+[0139_edges](https://github.com/user-attachments/assets/38bd7916-96d5-4737-847c-01aabb154971)
+
+# SIRP (Satellite Image Road Prediction)!
 
 **SIRP** is a project aimed at detecting roads in high-resolution satellite images using an Artificial Neural Network (ANN). This project automates road detection, making it easier to support geographic applications like mapping, infrastructure planning, and Geographic Information Systems (GIS).
 
@@ -73,6 +76,9 @@ Use `predict_and_visualize.py` to apply the trained model on new satellite image
 ```
 python predict_and_visualize.py
 ```
+
+![image](https://github.com/user-attachments/assets/2a132bc0-1118-4399-8a7f-1b84f53bb064)
+
 
 ### Contributing
 Contributions are welcome! If you have ideas to improve this project or encounter any issues, please open an issue or submit a pull request.
