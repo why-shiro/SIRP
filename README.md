@@ -1,5 +1,5 @@
+![0139_edges](https://github.com/user-attachments/assets/8c58bcf5-4efb-4fcf-8c26-9b07bc35b287)
 
-[0139_edges](https://github.com/user-attachments/assets/38bd7916-96d5-4737-847c-01aabb154971)
 
 # SIRP (Satellite Image Road Prediction)!
 
