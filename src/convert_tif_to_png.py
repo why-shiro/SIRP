@@ -11,11 +11,10 @@ def load_images_from_folder(folder):
 
 def convert_tif_to_png(images):
     for i in range(len(images)):
-        cv2.imwrite('output/' + str(i) + '.png', images[i])
         img = cv2.imread('output/' + str(i) + '.png')
         img = cv2.resize(img, (0,0), fx=0.1, fy=0.1)
         cv2.imwrite('output/converter/' + str(i) + '.png', img)
 
 
-images = load_images_from_folder('photos/');
-convert_tif_to_png(images);
+images = load_images_from_folder('photos/')
+convert_tif_to_png(images)
