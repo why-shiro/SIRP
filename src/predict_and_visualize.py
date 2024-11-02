@@ -17,7 +17,7 @@ features = extract_3x3_window_features(image)
 predictions = model.predict(features)
 
 # Tahmin edilen değerleri ikili (0 ve 1) sınıflara dönüştürün
-predicted_labels = (predictions > 0.5).astype(int)
+predicted_labels = (predictions > 0.7).astype(int)
 
 # Sonuçları orijinal görüntü boyutlarına geri dönüştürme
 height, width, _ = image.shape
