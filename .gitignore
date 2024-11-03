@@ -4,6 +4,7 @@
 *.tiff
 *.tif
 *.png
+*.html
 
 # Ignore Python cache files
 __pycache__/

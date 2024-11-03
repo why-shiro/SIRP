@@ -16,7 +16,8 @@ print(f"Image width: {width}, height: {height}")
 # Define the output paths
 georeferenced_image_path = "./map/server/photos/georeferenced_image.tif"
 warped_image_path = "./map/server/photos/warped_image.tif"
-tiles_output_path = "./map/server/tiles/"
+tiles_output_path = "./map/server/photos/tiles/"
+tiles_output_path_dir = "./map/server/photos/tiles/"
 
 # Define the geographic coordinates for each corner of the image
 top_left = (39.8303, 32.7125)     # Sol üst köşe
@@ -24,6 +25,7 @@ top_right = (39.8300, 32.7136)    # Sağ üst köşe
 bottom_left = (39.8311, 32.7464)  # Sol alt köşe
 bottom_right = (39.8397, 32.7464) # Sağ alt köşe
 
+# Step 1: Georeference the image using GDAL Python bindings
 # Step 1: Georeference the image using GDAL Python bindings
 def georeference_image(input_image_path, output_image_path, width, height):
     print("Georeferencing the image...")
@@ -33,12 +35,12 @@ def georeference_image(input_image_path, output_image_path, width, height):
     driver = gdal.GetDriverByName('GTiff')
     georeferenced_dataset = driver.CreateCopy(output_image_path, dataset, 0)
 
-    # Define GCPs (ground control points)
+    # Define GCPs (ground control points) with positive latitude values
     gcp_list = [
-        gdal.GCP(top_left[1], top_left[0], 0, 0, 0),
-        gdal.GCP(top_right[1], top_right[0], 0, width, 0),
-        gdal.GCP(bottom_left[1], bottom_left[0], 0, 0, height),
-        gdal.GCP(bottom_right[1], bottom_right[0], 0, width, height)
+        gdal.GCP(top_left[1], abs(top_left[0]), 0, 0, 0),
+        gdal.GCP(top_right[1], abs(top_right[0]), 0, width, 0),
+        gdal.GCP(bottom_left[1], abs(bottom_left[0]), 0, 0, height),
+        gdal.GCP(bottom_right[1], abs(bottom_right[0]), 0, width, height)
     ]
 
     # Set spatial reference to WGS84 (EPSG:4326)
@@ -51,6 +53,7 @@ def georeference_image(input_image_path, output_image_path, width, height):
     # Close the dataset
     georeferenced_dataset = None
     print("Georeferencing completed.")
+
 
 # Step 2: Warp the image to Web Mercator projection (EPSG:3857)
 def warp_image(input_image_path, output_image_path):
@@ -70,11 +73,10 @@ def generate_tiles(input_image_path, output_dir, min_zoom=15, max_zoom=19):
     command = [
         ".\.venv\Scripts\gdal2tiles.exe",            # Assumes gdal2tiles.py is in PATH
         "-z", f"{min_zoom}-{max_zoom}",  # Zoom levels
-        "-w", "none",               # Disable KML (optional)
         input_image_path,
         output_dir
     ]
-
+    
     subprocess.run(command, check=True)
     print("Tile generation completed.")
 

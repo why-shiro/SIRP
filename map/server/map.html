@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map Display</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
     <style>
         #map { height: 100vh; width: 100%; }
     </style>
@@ -12,51 +12,15 @@
 <body>
     <div id="map"></div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <div id='map' style='width: 400px; height: 300px;'></div>
     <script>
-        // Initialize the map view at an approximate center
-        var map = L.map('map').setView([39.835, 32.729], 15);
-
-        // Add the custom tile layer
-        L.tileLayer('./tiles/{z}/{x}/{y}.png', {
-            minZoom: 15,
-            maxZoom: 19,
-            continuousWorld: true,
-            noWrap: true,
-            attribution: '&copy; Your Project'
-        }).addTo(map);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Load tile markers from JSON file
-        fetch('tile_markers.json')
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(marker => {
-                    L.circleMarker([marker.lat, marker.lon], {
-                        radius: 4,
-                        color: 'red',
-                        fillColor: 'red',
-                        fillOpacity: 0.6
-                    }).addTo(map);
-                });
-            })
-            .catch(error => console.error('Error loading tile markers:', error));
-        
-            map.on('click', function (e) {
-                var lat = e.latlng.lat.toFixed(6);  // Limit to 6 decimal places
-                var lng = e.latlng.lng.toFixed(6);
-                
-                // Create a popup at the click location with coordinates
-                L.popup()
-                    .setLatLng(e.latlng)
-                    .setContent("Coordinates: " + lat + ", " + lng)
-                    .openOn(map);
-            });
-        
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZ29ubmFrbXMxIiwiYSI6ImNtMzBpZHphaTBudWcybHIzNHVwa3F1YTgifQ.OUDvuUxQQT4R4vi_AujOiA';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11'
+    });
     </script>
+
 </body>
 </html>

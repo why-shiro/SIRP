@@ -64,44 +64,33 @@ while len(img_list) > 1:
         img_list.insert(0, result)
         
         stitch_count += 1  # Increment the stitch count
-
-        # Calculate and print the progress
+        
         progress = (stitch_count / (total_images - 1)) * 100  # -1 because we start with two images
         print(f"Stitching progress: {progress:.2f}%")
 
 def crop_black_edges(img):
-    # Convert image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # Threshold the grayscale image to create a binary mask
     _, thresh = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
-    # Find the bounding box of non-zero regions
     coords = cv2.findNonZero(thresh)  # Find all non-zero points (text)
     x, y, w, h = cv2.boundingRect(coords)  # Find minimum spanning bounding box
-    # Crop the image
     cropped_img = img[y:y+h, x:x+w]
     return cropped_img
 
 def make_black_transparent(img):
-    # Convert image to RGBA
+    # Convert  to RGBA
     img_rgba = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
-    # Identify black pixels
     black_pixels = np.all(img[:, :, :3] == [0, 0, 0], axis=-1)
-    # Make black pixels transparent
     img_rgba[black_pixels, 3] = 0
     return img_rgba
 
-# İlk olarak siyah kenarları kırp
 result_cropped = crop_black_edges(result)
 
-# Ardından kalan siyah pikselleri şeffaf yap
 result_transparent = make_black_transparent(result_cropped)
 
-# Şeffaf görüntüyü PNG veya TIFF olarak kaydet
-cv2.imwrite('result.png', result_transparent)
+cv2.imwrite('result.jpg', result_transparent)
 cv2.imwrite('result.tif', result_transparent)
 
-# Şeffaf görüntüyü matplotlib ile göster
 result_rgb_transparent = cv2.cvtColor(result_transparent, cv2.COLOR_BGRA2RGBA)
 plt.imshow(result_rgb_transparent)
-plt.axis('off')  # Eksenleri gizle
+plt.axis('off')  
 plt.show()
