@@ -78,6 +78,10 @@ python predict_and_visualize.py
 ```
 
 ![image](https://github.com/user-attachments/assets/2a132bc0-1118-4399-8a7f-1b84f53bb064)
+![Ekran görüntüsü 2024-11-03 045520](https://github.com/user-attachments/assets/c62ece40-38f6-43b3-b818-63d5c99461b2)
+![Ekran görüntüsü 2024-11-03 045312](https://github.com/user-attachments/assets/806861bb-13a1-4048-b508-b78f2db85174)
+![Ekran görüntüsü 2024-11-03 052336](https://github.com/user-attachments/assets/43fe1156-bda0-4ae8-a419-0df063f8b074)
+![Ekran görüntüsü 2024-11-03 050000](https://github.com/user-attachments/assets/b6dea6f8-2c1b-4e96-9b95-6efdf7cd15ba)
 
 
 ### Contributing
